@@ -9,7 +9,7 @@ import numpy as np
 
 class Perceptron(object):
 
-    def __init__(self, threshold=500, step_size=2.0):
+    def __init__(self, threshold=100, step_size=1.0):
         self.step_size = step_size
         self.weights = np.array([0, 0, 0, 0])
         self.data = None
@@ -44,7 +44,6 @@ class Perceptron(object):
         counter = 0
         labels = self.labels
         training_input = self.data
-
 
         for i in range(self.threshold):
             weights_mult = np.array([0, 0, 0, 0])
@@ -82,7 +81,7 @@ class Perceptron(object):
     def has_converged(self):
         for expected, data_line in zip(self.labels, self.data):
             guess = self.test_classify(data_line, expected)
-            if expected != guess:
+            if  1.0 == guess:
                 return 0
         return 1
 
