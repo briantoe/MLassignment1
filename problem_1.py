@@ -61,27 +61,22 @@ class Perceptron(object):
             self.bias = self.bias + self.step_size * bias_mult
 
             ls = self.weights.tolist()
-            if True:
+            if counter < 3:
                 print("Weights: " + str(ls))
                 print("Bias: " + str(self.bias))
                 print("Iteration: " + str(counter) + '\n')
             if self.has_converged():
+                print("Final weights, biases, and iteration")
                 print("Weights: " + str(ls))
                 print("Bias: " + str(self.bias))
                 print("Iteration: " + str(counter) + '\n')
                 return
             counter += 1
 
-        ls = self.weights.tolist()
-        print("Weights: " + str(ls))
-        print("Bias: " + str(self.bias))
-        print("Iteration: " + str(counter) + '\n')
-        return
-
     def has_converged(self):
         for expected, data_line in zip(self.labels, self.data):
             guess = self.test_classify(data_line, expected)
-            if  1.0 == guess:
+            if 1.0 == guess:
                 return 0
         return 1
 
@@ -101,7 +96,7 @@ class Perceptron(object):
 p = Perceptron()
 p.read_data("perceptron.data")
 p.train()
-print(p.has_converged())
+
 
 # weights = np.array([0, 0, 0, 0, 0])
 # weights = np.transpose(weights)
