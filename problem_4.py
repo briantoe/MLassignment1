@@ -23,3 +23,4 @@ class SVM(object):
 
 svm = SVM()
 svm.read_data("mystery.data")
+cvxopt.get_versions()
