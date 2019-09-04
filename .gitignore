@@ -1,5 +1,4 @@
-./idea/
-./venv
-./mystery.data
-./perceptron.data
-
+.idea/
+venv/
+mystery.data
+perceptron.data
