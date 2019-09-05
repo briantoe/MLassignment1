@@ -20,4 +20,6 @@ plt.plot(plus1_x,plus1_y, 'bo')
 plt.plot(plus2_x,plus2_y, 'bo')
 plt.plot(minus1_x,minus1_y, 'ro')
 plt.plot(minus2_x,minus2_y,'ro')
+
+plt.axvline(x=0.0, color='k')
 plt.show()
