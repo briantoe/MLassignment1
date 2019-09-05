@@ -12,7 +12,7 @@ class Perceptron(object):
         self.bias = 0.0
 
     def sign(self, n):
-        if n > 0.0:  # if incorrectly classified
+        if n >= 0.0:  # if incorrectly classified
             return 1.0
         else:
             return 0.0
@@ -26,13 +26,7 @@ class Perceptron(object):
         output = self.sign(sum)
         return output
 
-    def test_classify(self, inputs, label):
-        sum = np.dot(inputs, self.weights) + self.bias
-        sum = sum * label * -1
-        if sum > 0:
-            return 1.0
-        elif sum < 0:
-            return -1.0
+
 
     def train(self):
         counter = 0
@@ -74,6 +68,14 @@ class Perceptron(object):
                 return 0
         return 1
 
+    def test_classify(self, inputs, label):
+        sum = np.dot(inputs, self.weights) + self.bias
+        sum = sum * label * -1
+        if sum >= 0:
+            return 1.0
+        elif sum < 0:
+            return -1.0
+
     def read_data(self, filename):
         data = []
         with open(filename) as file:
@@ -87,7 +89,7 @@ class Perceptron(object):
 
 class Stochastic(object):
 
-    def __init__(self, threshold=10000000000000, step_size=1.0):
+    def __init__(self, threshold=1000000000000000, step_size=1.0):
         self.step_size = step_size
         self.weights = np.array([0, 0, 0, 0])
         self.data = None
@@ -96,7 +98,7 @@ class Stochastic(object):
         self.bias = 0.0
 
     def sign(self, n):
-        if n > 0.0:
+        if n >= 0.0:
             return 1.0
         else:
             return 0.0
@@ -113,7 +115,7 @@ class Stochastic(object):
     def test_classify(self, inputs, label):
         sum = np.dot(inputs, self.weights) + self.bias
         sum = sum * label * -1
-        if sum > 0:
+        if sum >= 0:
             return 1.0
         elif sum < 0:
             return -1.0
@@ -174,11 +176,11 @@ class Stochastic(object):
 
 # MAIN
 print("<--- Problem 1a. --->")
-p = Perceptron()
+p = Perceptron(threshold=1000, step_size=1.0)
 p.read_data("perceptron.data")
 p.train()
 
 print("--- Problem 1b. ---")
-s = Stochastic()
+s = Stochastic(step_size=1.0)
 s.read_data("perceptron.data")
 s.train()
