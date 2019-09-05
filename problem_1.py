@@ -39,7 +39,7 @@ class Perceptron(object):
         labels = self.labels
         training_input = self.data
 
-        for i in range(self.threshold):
+        for _ in range(self.threshold):
             weights_mult = np.array([0, 0, 0, 0])
             bias_mult = 0.0
             for inputs, label in zip(training_input, labels):
