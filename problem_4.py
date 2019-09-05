@@ -1,26 +1,21 @@
 import numpy as np
-import cvxopt
+from cvxopt import solvers
 
 
-class SVM(object):
+def read_data(filename):
+    data = []
+    with open(filename) as file:
+        for line in file:
+            data_line = [float(item) for item in line.split(',')]
+            data.append(data_line)
+    data = np.array(data)
+    labels = data[:, -1] # grab all the labels
+    data = data[:, 0:4] # grab all the vectors
 
-    def __init__(self):
-        self.data = None
-        self.labels = None
-        pass
-
-    def read_data(self, filename):
-        data = []
-        with open(filename) as file:
-            for line in file:
-                data_line = [float(item) for item in line.split(',')]
-                data.append(data_line)
-        self.data = np.array(data)
-        self.labels = self.data[:, -1] # grab all the labels
-        self.data = self.data[:, 0:4] # grab all the vectors
-        print(type(self.data))
+    return (data, labels)
 
 
-svm = SVM()
-svm.read_data("mystery.data")
-cvxopt.get_versions()
+raw_data = read_data("mystery.data")
+data = raw_data[0]
+labels = raw_data[1]
+
