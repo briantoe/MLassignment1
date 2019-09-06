@@ -15,44 +15,35 @@ def read_data(filename):
 
     return (data, labels)
 
-def feature_mapping(x):
-    new_x = np.array([1.0])
-    new_x = np.append(new_x, list((float(item) for item in x)))
-    new_x = np.append(new_x, list((math.pow(item, 2.0) for item in x)))
+def feature_mapping(old_data):
+    mapped_data = []
+    for old_row in old_data:
+        new_row = list(old_row[0:4]) + list(math.pow(old_item, 2.0) for old_item in old_row[0:1]) + list(math.pow(old_item, 5.0) for old_item in old_row[1:2]) + list(math.pow(old_item, 3.0) for old_item in old_row[2:4]) + [12]
+        mapped_data.append(new_row)
 
-    return new_x
+    return (np.array(mapped_data))
 
 
 raw_data = read_data("mystery.data")
 data = raw_data[0]
 labels = raw_data[1]
 
-dim = len(data)
+data = feature_mapping(data)
+dim = len(data[0]) + 1
+print(dim)
 
+P = np.eye(dim)
+P[-1,-1] = 0.0
+P = 2 * P
 
-P = matrix([[1.0, 0, 0, 0, 0],
-           [0, 1.0, 0, 0, 0],
-           [0, 0, 1.0, 0, 0],
-           [0, 0, 0, 1.0, 0],
-           [0, 0, 0, 0, 0]])
+P = matrix(P)
+q = matrix(np.zeros(dim))
+h = matrix(-1 * np.ones((len(data),1)))
+G = np.zeros((len(data), dim))
 
-q = matrix(np.zeros(5))
+for row in range(len(data)):
+    G[row] = np.hstack((-1 * labels[row] * data[row], -1 * labels[row]))
+G = matrix(G)
 
-h = matrix(-1 * np.ones((dim,1)))
-
-w = np.array([0, 0, 0, 0, 0])
-G = matrix(np.eye(5))
-new_G = matrix(np.eye(5))
-
-for _ in range(200-1):
-    new_G = np.vstack((new_G,G))
-
-labels = matrix(labels)
-new_G = matrix(new_G)
-
-new_G = np.multiply(labels, new_G)
-new_G = matrix(new_G, (dim, 5), 'd')
-
-
-sol = solvers.qp(P, q, new_G, h)
+sol = solvers.qp(P, q, G, h)
 print(sol['x'])
