@@ -22,25 +22,37 @@ def feature_mapping(x):
 
     return new_x
 
+
 raw_data = read_data("mystery.data")
 data = raw_data[0]
 labels = raw_data[1]
 
-w = np.array([0.0, 0.0, 0.0, 0.0])
-b = 0.0
+dim = len(data)
 
-n = 5
-P = matrix(0.0, (n,n))
-P[::n+1] = 1.0
-P[-1,-1] = 0.0
 
-q = matrix(0.0, (5,1))
-h = matrix([1.0])
+P = matrix([[1.0, 0, 0, 0, 0],
+           [0, 1.0, 0, 0, 0],
+           [0, 0, 1.0, 0, 0],
+           [0, 0, 0, 1.0, 0],
+           [0, 0, 0, 0, 0]])
 
-for x, y in zip(data, labels):
-    G = -y * np.dot(w,x) + b
-    
-    G = matrix.trans(matrix([G, 0, 0, 0, 0]))
-    print(G)
-    sol = solvers.qp(P, q, G, h, A=None, b=None)
-    print(sol)
+q = matrix(np.zeros(5))
+
+h = matrix(-1 * np.ones((dim,1)))
+
+w = np.array([0, 0, 0, 0, 0])
+G = matrix(np.eye(5))
+new_G = matrix(np.eye(5))
+
+for _ in range(200-1):
+    new_G = np.vstack((new_G,G))
+
+labels = matrix(labels)
+new_G = matrix(new_G)
+
+new_G = np.multiply(labels, new_G)
+new_G = matrix(new_G, (dim, 5), 'd')
+
+
+sol = solvers.qp(P, q, new_G, h)
+print(sol['x'])
