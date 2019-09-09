@@ -47,4 +47,17 @@ for row in range(len(data)):
 G = matrix(G)
 
 sol = solvers.qp(P, q, G, h)
-print(sol['x'])
+# print(sol['x'])
+
+sol_arr = np.array(sol['x'])
+w = sol_arr[:dim-1]
+b = sol_arr[-1]
+
+print("\nw: " + str(w) + '\n')
+print("b: " + str(b))
+
+supvectpos = []
+supvectneg = []
+for i in range(len(data)):
+    # passb = y[S] - np.dot(X[S], w)
+    pass
