@@ -10,11 +10,12 @@ def read_data(filename):
             data_line = [float(item) for item in line.split(',')]
             data.append(data_line)
     data = np.array(data)
-    labels = data[:, -1] # grab all the labels
-    data = data[:, 0:4] # grab all the vectors
+    labels = data[:, 0] # grab labels
+    dim = len(data[0]) # dimension of the data
+    data = data[:, 1:dim] # grab vectors
 
-    # print(type(labels),type(data))
     return (data, labels)
+
 
 def feature_mapping(old_data):
     mapped_data = []
@@ -24,13 +25,20 @@ def feature_mapping(old_data):
 
     return (np.array(mapped_data))
 
+def reform_labels(labels):
+    for i in range(len(labels)):
+        if labels[i] == 0:
+            labels[i] = -1
 
-raw_data = read_data("mystery.data")
+    return labels
+
+raw_data = read_data("park_train.data")
 data = raw_data[0]
 labels = raw_data[1]
+labels = reform_labels(labels)
 
-data = feature_mapping(data)
-dim = len(data[0]) + 1
+dim = len(data[0]) + 1 # + 1 because why??
+
 
 P = np.eye(dim)
 P[-1,-1] = 0.0
@@ -47,17 +55,12 @@ for row in range(len(data)):
 G = matrix(G)
 
 sol = solvers.qp(P, q, G, h)
-# print(sol['x'])
 
 sol_arr = np.array(sol['x'])
 w = sol_arr[:dim-1]
+
 b = sol_arr[-1]
 
 print("\nw: " + str(w) + '\n')
 print("b: " + str(b))
 
-supvectpos = []
-supvectneg = []
-for i in range(len(data)):
-    # passb = y[S] - np.dot(X[S], w)
-    pass
