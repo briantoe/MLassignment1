@@ -1,8 +1,9 @@
 .vscode/
 .idea/
 venv/
-mystery.data
-perceptron.data
+#mystery.data
+#perceptron.data
+*.data
 *.pdf
 step*.txt
 problem*.txt
