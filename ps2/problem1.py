@@ -26,15 +26,9 @@ def reform_labels(labels):
     return labels
 
 
-# train, validation, or test mode
-which = 1
+# training step
 
-if which == 1:
-    filename = "park_train.data"
-elif which == 2:
-    filename = "park_validation.data"
-elif which == 3:
-    filename = "park_test.data"
+filename = "park_train.data"
 
 raw_data = read_data(filename)
 data = raw_data[0]
@@ -43,7 +37,6 @@ labels = reform_labels(labels)
 
 dim = len(data[0]) + 1 # + 1 because of b
 
-cvals = [math.pow(10, i) for i in range (9)]
 
 P = np.zeros((dim + len(data), dim + len(data)))
 i = 0
@@ -77,14 +70,42 @@ G_final = np.vstack((G_top, G_bot))
 G_final = matrix(G_final)
 
 
+# validation step
+filename = "park_validation.data"
+
+raw_data = read_data(filename)
+data = raw_data[0]
+labels = raw_data[1]
+labels = reform_labels(labels)
+
+dim = len(data[0]) + 1 # + 1 because of b
+
+cvals = [math.pow(10, i) for i in range (9)]
+bestc= -1
+leastclassifications = float('inf')
 for c in cvals:
     sol = solvers.qp(P, c * q, G_final, h)
-
     sol_arr = np.array(sol['x'])
     w = sol_arr[:dim-1]
     b = sol_arr[dim-1]
     zi = sol_arr[dim+1-1:]
-    
+
+    misclassified = 0
+    for point, label in zip(data, labels):
+
+        if label * (np.dot(np.transpose(w),point)) + b <= 0:
+            misclassified += 1
+
+    if misclassified < leastclassifications:
+        leastclassifications = misclassified
+        bestc = c
+
+
+sol = solvers.qp(P, bestc * q, G_final, h)
+sol_arr = np.array(sol['x'])
+w = sol_arr[:dim-1]
+b = sol_arr[dim-1]
+zi = sol_arr[dim+1-1:]
 
 print("\nw: " + str(w) + '\n')
 print("b: " + str(b))
