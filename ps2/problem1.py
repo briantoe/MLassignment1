@@ -2,6 +2,8 @@ import numpy as np
 from cvxopt import solvers, matrix
 import math
 
+np.set_printoptions(threshold=1000)
+
 
 def read_data(filename):
     data = []
@@ -16,15 +18,6 @@ def read_data(filename):
 
     return (data, labels)
 
-
-def feature_mapping(old_data):
-    mapped_data = []
-    for old_row in old_data:
-        new_row = list(math.pow(old_item, 3.0) for old_item in old_row[0:4]) +  list((math.pow(old_item, 2.0) * np.exp(old_item)) for old_item in old_row[0:4])#+ list(math.pow(old_item, 2.0) for old_item in old_row[0:4]) #+ list(math.pow(old_item, 5.0) for old_item in old_row[1:2]) + list(math.pow(old_item, 3.0) for old_item in old_row[2:4]) + [12]
-        mapped_data.append(new_row)
-
-    return (np.array(mapped_data))
-
 def reform_labels(labels):
     for i in range(len(labels)):
         if labels[i] == 0:
@@ -32,35 +25,68 @@ def reform_labels(labels):
 
     return labels
 
-raw_data = read_data("park_train.data")
+
+# train, validation, or test mode
+which = 1
+
+if which == 1:
+    filename = "park_train.data"
+elif which == 2:
+    filename = "park_validation.data"
+elif which == 3:
+    filename = "park_test.data"
+
+raw_data = read_data(filename)
 data = raw_data[0]
 labels = raw_data[1]
 labels = reform_labels(labels)
 
-dim = len(data[0]) + 1 # + 1 because why??
+dim = len(data[0]) + 1 # + 1 because of b
 
+cvals = [math.pow(10, i) for i in range (9)]
 
-P = np.eye(dim)
-P[-1,-1] = 0.0
-P = 2 * P
-
+P = np.zeros((dim + len(data), dim + len(data)))
+i = 0
+while i < 22:  # creates P matrix of 1s and then 0s on diagonal
+    P[i,i] = 1.0    
+    i += 1 
+P = 2 * P # 2P because of the 1/2 in std form
 P = matrix(P)
-q = matrix(np.zeros(dim))
-h = matrix(-1 * np.ones((len(data),1)))
+
+q = np.zeros(dim)
+q = (np.append(q, np.ones(len(data))))
+q = matrix(q)
+
 G = np.zeros((len(data), dim))
+
+h_neg_ones = -1 * np.ones(len(data))
+h_zeros = np.zeros(len(data))
+h = np.append(h_neg_ones, h_zeros)
+h = matrix(h)
 
 for row in range(len(data)):
     G[row] = np.hstack((-1 * labels[row] * data[row], -1 * labels[row]))
 
-G = matrix(G)
+neg_I = -1 * np.eye(len(data))
+G_zeros = np.zeros((len(data), dim))
 
-sol = solvers.qp(P, q, G, h)
+G_bot = np.hstack((G_zeros, neg_I))
+G_top = np.hstack((G, neg_I))
 
-sol_arr = np.array(sol['x'])
-w = sol_arr[:dim-1]
+G_final = np.vstack((G_top, G_bot))
+G_final = matrix(G_final)
 
-b = sol_arr[-1]
+
+for c in cvals:
+    sol = solvers.qp(P, c * q, G_final, h)
+
+    sol_arr = np.array(sol['x'])
+    w = sol_arr[:dim-1]
+    b = sol_arr[dim-1]
+    zi = sol_arr[dim+1-1:]
+    
 
 print("\nw: " + str(w) + '\n')
 print("b: " + str(b))
+print("\nzi: " + str(zi) + '\n')
 
