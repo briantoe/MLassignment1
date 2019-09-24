@@ -3,7 +3,7 @@ from cvxopt import solvers, matrix
 import math
 
 np.set_printoptions(threshold=1000)
-solvers.options['show_pr    ogress'] = False
+solvers.options['show_progress'] = False
 
 
 def read_data(filename):
