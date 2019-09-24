@@ -3,6 +3,7 @@ from cvxopt import solvers, matrix
 import math
 
 np.set_printoptions(threshold=1000)
+solvers.options['show_pr    ogress'] = False
 
 
 def read_data(filename):
@@ -82,7 +83,7 @@ dim = len(data[0]) + 1 # + 1 because of b
 
 cvals = [math.pow(10, i) for i in range (9)]
 bestc= -1
-leastclassifications = float('inf')
+leastmisclassifications = float('inf')
 for c in cvals:
     sol = solvers.qp(P, c * q, G_final, h)
     sol_arr = np.array(sol['x'])
@@ -93,12 +94,17 @@ for c in cvals:
     misclassified = 0
     for point, label in zip(data, labels):
 
-        if label * (np.dot(np.transpose(w),point)) + b <= 0:
+        if label * ((np.dot(np.transpose(w),point)) + b) <= 0:
             misclassified += 1
 
-    if misclassified < leastclassifications:
-        leastclassifications = misclassified
+    if misclassified < leastmisclassifications:
+        leastmisclassifications = misclassified
         bestc = c
+    print("Value of C = %d, amount of misclassifications = %d" % (c, misclassified))
+    # print("Classifier for C = %d" % c)
+    # print("w = " + str(w) + '\n')
+    # print("b = " + str(b) + '\n')
+    # print("zi = " + str(zi)+ '\n')
 
 
 sol = solvers.qp(P, bestc * q, G_final, h)
@@ -106,6 +112,8 @@ sol_arr = np.array(sol['x'])
 w = sol_arr[:dim-1]
 b = sol_arr[dim-1]
 zi = sol_arr[dim+1-1:]
+
+print("\nBEST C = %d" % (bestc))
 
 print("\nw: " + str(w) + '\n')
 print("b: " + str(b))
