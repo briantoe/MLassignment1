@@ -37,3 +37,30 @@ labels = raw_data[1]
 labels = reform_labels(labels)
 
 dim = len(data[0]) + 1 # + 1 because of b
+
+P = np.eye(len(data))
+q = np.zeros(len(data))
+h = -1 * np.ones(len(data))
+
+G = []
+
+for y, x in zip(labels,data):
+    G_row = [x_item * y for x_item in x]
+    G.append(G_row)
+    
+G = np.array(G)
+print(G.shape)
+G = matrix(G)
+P = matrix(P)
+q = matrix(q)
+h = matrix(h)
+
+sol = solvers.qp(P, q, G, h)
+sol_arr = np.array(sol['x'])
+w = sol_arr[:dim-1]
+b = sol_arr[dim-1]
+zi = sol_arr[dim+1-1:]
+
+sigmas = [math.pow(10, i) for i in range(-1,4)]
+cvals = [math.pow(10, i) for i in range (9)]
+

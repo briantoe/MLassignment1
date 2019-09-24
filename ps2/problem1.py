@@ -100,7 +100,8 @@ for c in cvals:
     if misclassified < leastmisclassifications:
         leastmisclassifications = misclassified
         bestc = c
-    print("Value of C = %d, amount of misclassifications = %d" % (c, misclassified))
+    # percent = float((len(data) - misclassified) / len(data)) * 100.0    
+    # print("Value of C = %d, amount of misclassifications = %d, Accuracy: %.2f%%" % (c, misclassified, percent))
     # print("Classifier for C = %d" % c)
     # print("w = " + str(w) + '\n')
     # print("b = " + str(b) + '\n')
@@ -113,9 +114,32 @@ w = sol_arr[:dim-1]
 b = sol_arr[dim-1]
 zi = sol_arr[dim+1-1:]
 
-print("\nBEST C = %d" % (bestc))
+# print("\nBEST C = %d" % (bestc))
 
-print("\nw: " + str(w) + '\n')
-print("b: " + str(b))
-print("\nzi: " + str(zi) + '\n')
+# print("\nw: " + str(w) + '\n')
+# print("b: " + str(b))
+# print("\nzi: " + str(zi) + '\n')
 
+filename = "park_test.data"
+
+raw_data = read_data(filename)
+data = raw_data[0]
+labels = raw_data[1]
+labels = reform_labels(labels)
+
+dim = len(data[0]) + 1 # + 1 because of b
+
+misclassified = 0
+for point, label in zip(data, labels):
+    if label * ((np.dot(np.transpose(w),point)) + b) <= 0:
+        misclassified += 1
+
+
+percent = float((len(data) - misclassified) / len(data)) * 100.0    
+print("Value of C = %d, amount of misclassifications = %d, Accuracy: %.2f%%" % (bestc, misclassified, percent))
+
+sol = solvers.qp(P, bestc * q, G_final, h)
+sol_arr = np.array(sol['x'])
+w = sol_arr[:dim-1]
+b = sol_arr[dim-1]
+zi = sol_arr[dim+1-1:]

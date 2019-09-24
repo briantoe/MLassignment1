@@ -1,0 +1,9 @@
+Value of C = 1, amount of misclassifications = 10, Accuracy: 87.18%
+Value of C = 10, amount of misclassifications = 10, Accuracy: 87.18%
+Value of C = 100, amount of misclassifications = 8, Accuracy: 89.74%
+Value of C = 1000, amount of misclassifications = 8, Accuracy: 89.74%
+Value of C = 10000, amount of misclassifications = 8, Accuracy: 89.74%
+Value of C = 100000, amount of misclassifications = 8, Accuracy: 89.74%
+Value of C = 1000000, amount of misclassifications = 4, Accuracy: 94.87%
+Value of C = 10000000, amount of misclassifications = 3, Accuracy: 96.15%
+Value of C = 100000000, amount of misclassifications = 2, Accuracy: 97.44%
