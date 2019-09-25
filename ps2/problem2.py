@@ -28,6 +28,9 @@ def reform_labels(labels):
 
 
 # training step
+sigmas = [math.pow(10, i) for i in range(-1,4)]
+cvals = [math.pow(10, i) for i in range (9)]
+
 
 filename = "park_train.data"
 
@@ -39,8 +42,10 @@ labels = reform_labels(labels)
 dim = len(data[0]) + 1 # + 1 because of b
 
 P = np.eye(len(data))
-q = np.zeros(len(data))
-h = -1 * np.ones(len(data))
+q = -1 * np.ones(len(data))
+b = np.zeros(len(data)) 
+h_zeros = np.zeros(len(data))
+h_cs = np.array([cvals[0] for i in range(len(data))])
 
 G = []
 
@@ -60,7 +65,4 @@ sol_arr = np.array(sol['x'])
 w = sol_arr[:dim-1]
 b = sol_arr[dim-1]
 zi = sol_arr[dim+1-1:]
-
-sigmas = [math.pow(10, i) for i in range(-1,4)]
-cvals = [math.pow(10, i) for i in range (9)]
 
