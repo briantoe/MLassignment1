@@ -82,7 +82,7 @@ labels = reform_labels(labels)
 dim = len(data[0]) + 1 # + 1 because of b
 
 cvals = [math.pow(10, i) for i in range (9)]
-bestc= -1
+bestc= -1 # idk some random value
 leastmisclassifications = float('inf')
 for c in cvals:
     sol = solvers.qp(P, c * q, G_final, h)
@@ -137,9 +137,3 @@ for point, label in zip(data, labels):
 
 percent = float((len(data) - misclassified) / len(data)) * 100.0    
 print("Value of C = %d, amount of misclassifications = %d, Accuracy: %.2f%%" % (bestc, misclassified, percent))
-
-sol = solvers.qp(P, bestc * q, G_final, h)
-sol_arr = np.array(sol['x'])
-w = sol_arr[:dim-1]
-b = sol_arr[dim-1]
-zi = sol_arr[dim+1-1:]

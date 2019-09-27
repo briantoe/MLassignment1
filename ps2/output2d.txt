@@ -1,0 +1,2 @@
+Testing:
+Value of C = 10, Value of sigma = 100, amount of misclassifications = 22, Accuracy: 62.71%
