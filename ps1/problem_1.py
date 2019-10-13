@@ -175,7 +175,7 @@ class Stochastic(object):
 
 
 # MAIN
-x = 0.001
+x = 1.0
 print("<--- Problem 1a. --->")
 p = Perceptron(threshold=1000, step_size=x)
 p.read_data("perceptron.data")
@@ -183,7 +183,7 @@ p.train()
 
 print("step size = " + str(x))
 
-print("--- Problem 1b. ---")
+print("<--- Problem 1b. --->")
 s = Stochastic(step_size=x)
 s.read_data("perceptron.data")
 s.train()

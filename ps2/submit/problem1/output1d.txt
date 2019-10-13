@@ -1,0 +1,1 @@
+Value of C = 10, amount of misclassifications = 10, Accuracy: 83.05%

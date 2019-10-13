@@ -29,7 +29,7 @@ def read_data(filename):
         for line in file:
             data_line = [item.replace('\n', '') for item in line.split(',')]
             data.append(data_line)
-    data = np.array(data)
+    # data = np.array(data)
     return data
     # labels = data[:, 0] # grab labels
     # dim = len(data[0]) # dimension of the data
@@ -44,7 +44,7 @@ def find_best_split(rows):
     best_gain = 0
     best_question = None
     uncertain = gini(rows)
-    feat_num = len(rows[0] - 1)
+    feat_num = len(rows[0] )- 1
 
     for col in range(feat_num):
         values = unique_values(rows, col)
@@ -130,11 +130,13 @@ def main():
     filename = "mush_train.data"
     labels_and_data = read_data(filename)
 
+    # print(str(labels_and_data))
+
     filename = "mush_test.data"
     test_labels_and_data = read_data(filename)
-
-    tree = build_tree(labels_and_data[0])
-    print(classify(labels_and_data[0], tree))
+    print(str(test_labels_and_data))
+    # tree = build_tree(labels_and_data[0])
+    # print(classify(labels_and_data[0], tree))
 
 
 
