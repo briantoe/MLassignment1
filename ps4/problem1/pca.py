@@ -1,6 +1,7 @@
 import numpy as np
 import csv
 import copy
+import svmwithslack
 np.set_printoptions(threshold=1000)
 
 
@@ -31,6 +32,8 @@ def main():
     # only care for first 6 eigenvalues 
     print("First 6 eigenvalues of the data covariance matrix: ")
     print(eig_vals[0:6])
+
+    svmwithslack.train_classifier(data, labels, np.array(eig_vals), np.array(eig_vects))
     
 
 

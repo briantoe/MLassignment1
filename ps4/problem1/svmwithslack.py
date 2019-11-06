@@ -27,26 +27,25 @@ def reform_labels(labels):
     return labels
 
 
-def train_classifier(d, l, ks): # data, labels
+def train_classifier(d, l, eig_vals, eig_vects): 
     # training step
 
-    # filename = "park_train.data"
-
-    # raw_data = read_data(filename)
-    # data = raw_data[0]
-    # labels = raw_data[1]
     labels = reform_labels(l)
     data = d
 
-    dim = len(data[0]) + 1 # + 1 because of b
+    
 
     for k in range(6):
         data = d
-        data = np.dot()
-
+        data = np.dot(eig_vects[0:k+1], data.T)
+        data = data.T
+        dim = len(data[0]) + 1 # + 1 because of b
+        
         P = np.zeros((dim + len(data), dim + len(data)))
         i = 0
-        while i < data[0]:  # creates P matrix of 1s and then 0s on diagonal
+        # print(len(data[0]))
+        while i < len(data[0]):  # creates P matrix of 1s and then 0s on diagonal
+            # print(i)
             P[i,i] = 1.0    
             i += 1 
         P = 2 * P # 2P because of the 1/2 in std form
@@ -107,6 +106,7 @@ def train_classifier(d, l, ks): # data, labels
                 bestc = c
             percent = float((len(data) - misclassified) / len(data)) * 100.0    
             print("Value of C = %d, amount of misclassifications = %d, Accuracy: %.2f%%" % (c, misclassified, percent))
+            print("Value of K = %d" %(k))
             print("Classifier for C = %d" % c)
             print("w = " + str(w) + '\n')
             print("b = " + str(b) + '\n')
@@ -127,7 +127,7 @@ def train_classifier(d, l, ks): # data, labels
     # print("b: " + str(b))
     # print("\nzi: " + str(zi) + '\n')
 
-def test(bestc):
+def test(bestc, w, b):
     filename = "park_test.data"
 
     raw_data = read_data(filename)
