@@ -29,7 +29,7 @@ def reform_labels(labels):
 
 # training step
 
-filename = "../park_train.data"
+filename = "../sonar_train.data"
 
 raw_data = read_data(filename)
 data = raw_data[0]
@@ -72,7 +72,7 @@ G_final = matrix(G_final)
 
 
 # validation step
-filename = "../park_validation.data"
+filename = "../sonar_valid.data"
 
 raw_data = read_data(filename)
 data = raw_data[0]
@@ -81,7 +81,8 @@ labels = reform_labels(labels)
 
 dim = len(data[0]) + 1 # + 1 because of b
 
-cvals = [math.pow(10, i) for i in range (9)]
+# cvals = [math.pow(10, i) for i in range (9)]
+cvals = [1,10,100,1000]
 bestc= -1 # idk some random value
 leastmisclassifications = float('inf')
 for c in cvals:
@@ -120,7 +121,7 @@ zi = sol_arr[dim+1-1:]
 # print("b: " + str(b))
 # print("\nzi: " + str(zi) + '\n')
 
-filename = "../park_test.data"
+filename = "../sonar_test.data"
 
 raw_data = read_data(filename)
 data = raw_data[0]

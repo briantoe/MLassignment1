@@ -3,14 +3,13 @@ import math
 import numpy as np
 from cvxopt import solvers,matrix
 import copy
+
 solvers.options['show_progress'] = False
 
 def reform_labels(labels):
 	for i in range(len(labels)):
 		if labels[i] == 2:
 			labels[i] = -1
-		# elif labels[i] == 1:
-			# labels[i] = -1
 
 	return labels
 
@@ -71,7 +70,7 @@ def slack_svm(X,Y,c):
 	w = np.array(w).reshape(n_feature,1)
 	b = solution[n_feature]
 	ksi = list(solution[n_feature+1:])
-	# verify(X,Y,w,b,ksi)
+	verify(X,Y,w,b,ksi)
 	return w,b,ksi
 
 # f(x) = wx+b
@@ -87,11 +86,15 @@ def get_accuracy(Y,O):
 
 # check the correctness of result parameter
 def verify(X,Y,w,b,ksi):
+	
 	n_sample = len(Y)
 	for i in range(n_sample):
 		y_i = Y[i]
 		x_i = X[:,i]
 		if y_i*(np.dot(w.T,x_i)+b) + ksi[i] < 1:
+			# print((y_i*(np.dot(w.T,x_i)+b) + ksi[i] )[0])
+			if ((y_i*(np.dot(w.T,x_i)+b) + ksi[i])[0]) > .999:
+				continue
 			print("ERROR FIND !")
 			exit(0)
 	print("Result PASS!")
@@ -122,7 +125,6 @@ if __name__ == '__main__':
 	eig_vals_train, eig_vects_train = pca(X_t)
 	# eig_vals_valid, eig_vects_valid = pca(X_v)
 	# eig_vals_test, eig_vects_test = pca(X_test)
-	bestk = None
 
 	temp = np.array(eig_vects_train)
 	PM = None
@@ -160,14 +162,22 @@ if __name__ == '__main__':
 		accuracy['t'] = []
 		accuracy['v'] = []
 
-
-	quit()
 	# verify best para on test set
+	X_t,Y_t = import_data('../sonar_train.data')
+	X_test,Y_test = import_data('../sonar_test.data')
+
+	c = 1000
+	k = 5
+	PM = temp.T[0:k] 
+	# BEST K IS 5
 	X_test = np.dot(PM, X_test.T)
-	for c,acc in max_configs:
-		w,b,ksi = slack_svm(X_t,Y_t,c)
-		# print("x test")
-	
-		O = F(w,b,X_test)
-		print("\n1.1(c) Best C ",c)
-		print("\t1.1(d) accuracy",get_accuracy(Y_test,O))
+	X_t = np.dot(PM, X_t.T)
+	# for c,acc in max_configs:
+	w,b,ksi = slack_svm(X_t,Y_t,c)
+
+	O = F(w,b,X_test)
+	# print("\n1.1(c) Best C ",c)
+	# print("\t1.1(d) accuracy",get_accuracy(Y_test,O))
+	print("BEST C: " + str(c))
+	print("BEST K: " + str(k))
+	print("Accuracy on the test dataset: %.2f%%" % (100 * get_accuracy(Y_test, O)))

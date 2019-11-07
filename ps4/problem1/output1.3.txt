@@ -1,0 +1,6 @@
+BEST C: 1000
+BEST K: 5
+Accuracy on the test dataset: 76.92%
+
+# WITHOUT USING FEATURE SELECTION: 
+Value of C = 10, amount of misclassifications = 2, Accuracy: 96.15%
