@@ -4,9 +4,9 @@ import numpy as np
 
 
 def reform_labels(labels):
-    for i in range(len(labels)):
-        if labels[i] == 2:
-            labels[i] = -1
+    # for i in range(len(labels)):
+    #     if labels[i] == 2:
+    #         labels[i] = -1
 
     return labels
 
@@ -42,9 +42,9 @@ def std_dev(ds):
     return sqrt(variance)
 
 def g_probability(x, mean, std):
-    return 1/(sqrt(2*pi*std)) * exp(-((x-mean)**2)/(2*std**2))
+    return 1/(sqrt(2*pi*std**2)) * exp(-((x-mean)**2)/(2*std**2))
 
-def class_probability(summ, row): # gaussian prob
+def class_probability(summ, row):
     total_rows = sum([summ[label][0][2] for label in summ])
     # total number of data points that are in the data set
     probs = dict()
@@ -61,31 +61,38 @@ def class_probability(summ, row): # gaussian prob
 
 def main():
     X_train, Y_train, train_dataset = import_data("sonar_train.data")
-    X_test, Y_test, _ = import_data("sonar_test.data")
+    X_test, Y_test, test_dataset = import_data("sonar_test.data")
 
+    # summarize by class ()
     sep = separate_by_class(train_dataset)
     # calculate the mean and std_dev for all columns in the dataset
     summary = dict()
-    for key in sep:
-        temp = [(mean(col), std_dev(col), len(col)) for col in sep[key].T]
-        # len(col) is storing the number of occurrances a class has
+    for lblval, rows in sep.items():
+        temp = [(mean(col), std_dev(col), len(col)) for col in zip(*rows)]
         del(temp[-1])
-        summary[key] = temp
+        summary[lblval] = temp
+
+    # end summarize by class
+    label = None
+    labels = []
+    for row in test_dataset:
+        probabilities = class_probability(summary, row[0:-1])
+        if(probabilities[2.0] > probabilities[1.0]):
+            label = 2
+        else:
+            label = 1
+        labels.append(label)
 
     misclassifications = 0
-    for x, y in zip(X_test,Y_test):
-        probs = class_probability(summary, x)
-        prediction = None
-        if probs[1.0] > probs[-1.0]:
-            prediction = 1
-        elif probs[-1.0] > probs[1.0]:
-            prediction = -1
-        
-        if prediction != y:
+    for l, y in zip(labels,Y_test):
+        if l != y:
             misclassifications += 1
     
     accuracy = float(len(X_test) - misclassifications) / len(X_test) * 100.0
     print("Accuracy = %.2f%%" %(accuracy))
-    
+
+
+
+
 if __name__ == "__main__":
     main()

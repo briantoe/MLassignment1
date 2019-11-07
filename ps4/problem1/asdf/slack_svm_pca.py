@@ -82,7 +82,7 @@ def get_accuracy(Y,O):
 	R = np.multiply(Y.T,O)
 	n_right = len(R[R>0])
 	accuracy = float(n_right)/len(Y)
-	return accuracy
+	return 1 - accuracy
 
 # check the correctness of result parameter
 def verify(X,Y,w,b,ksi):
@@ -97,7 +97,7 @@ def verify(X,Y,w,b,ksi):
 				continue
 			print("ERROR FIND !")
 			exit(0)
-	print("Result PASS!")
+	# print("Result PASS!")
 	return 0
 
 
@@ -156,8 +156,8 @@ if __name__ == '__main__':
 		# print("\n1.1(c) accuracy",accuracy['v'])
 
 		print("\nK = " + str(k))
-		print("Accuracy on training data for C = " + str(C_list) + " \n" + str(accuracy['t']))
-		print("Accuracy on validation data for C = " + str(C_list) + " \n" + str(accuracy['v']))
+		# print("Accuracy on training data for C = " + str(C_list) + " \n" + str(accuracy['t']))
+		print("Error on validation data for C = " + str(C_list) + " \n" + str(accuracy['v']))
 		print()
 		accuracy['t'] = []
 		accuracy['v'] = []
@@ -180,4 +180,4 @@ if __name__ == '__main__':
 	# print("\t1.1(d) accuracy",get_accuracy(Y_test,O))
 	print("BEST C: " + str(c))
 	print("BEST K: " + str(k))
-	print("Accuracy on the test dataset: %.2f%%" % (100 * get_accuracy(Y_test, O)))
+	print("Error on the test dataset: %.2f%%" % (100 * get_accuracy(Y_test, O)))
