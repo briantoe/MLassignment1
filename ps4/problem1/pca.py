@@ -1,5 +1,4 @@
 import numpy as np
-import csv
 import copy
 np.set_printoptions(threshold=1000)
 
@@ -17,8 +16,6 @@ def pca(data):
     return (sorted(eig_vals, reverse=True), [x for _,x in sorted(zip(eig_vals,eig_vect), reverse=True)])
    
 
-# def svm(data, eig_vals):
-    
 
 def main():
     np.set_printoptions(threshold=1000)
