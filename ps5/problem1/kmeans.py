@@ -26,24 +26,38 @@ def normalize_data(x):
 def kmeans(x, y, k):
     means = [] # mus
     clusters = dict() # S
+  
     for i in range(k):
         means.append([random.uniform(-3,3) for _ in range(len(x[0]))])
         clusters[i] = []
 
-    for datapoint in x:
-        dists = []
-        for mean in means:
-            dists.append(euclidean(datapoint, mean))
-        m = min(dists)
-        clusters[dists.index(m)].append(datapoint)
+    previous_means = []
+    while True:
+        clusters = dict()
+        for datapoint in x:
+            dists = []
+            for mean in means:
+                dists.append(euclidean(datapoint, mean) ** 2)
+            m = min(dists)
+            clusters[dists.index(m)].append(datapoint)
+            
+        for key in clusters:
+            if len(clusters[key]) == 0: 
+                continue
+            else:
+                means[key] = np.mean(clusters[key])
         
+        if means == previous_means:
+            break
+        previous_means = means
+    
+def compute_objective(means, clusters):
+    dist = 0
     for key in clusters:
-        if len(clusters[key]) == 0: 
-            continue
-        else:
-            means[key] = np.mean(clusters[key])
+        dist += sum([(x-means[key]) ** 2 for x in clusters[key]])
     
-    
+    return dist
+
 
 if __name__ == "__main__":
     x, y = import_data('leaf.data')
