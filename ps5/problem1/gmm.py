@@ -24,6 +24,10 @@ def normalize_data(x):
     return x
 
 
+def gmm(x, k):
+    
+    pass
+
 if __name__ == "__main__":
     x, y = import_data('leaf.data')
     x = normalize_data(x)
@@ -31,5 +35,4 @@ if __name__ == "__main__":
 
     ks = [12, 18, 24, 36, 42]
     
-    # for k in ks:
-        # kmeans(x, y, k)
+

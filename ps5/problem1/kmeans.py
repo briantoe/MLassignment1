@@ -2,6 +2,7 @@ import numpy as np
 from math import *
 import random
 from scipy.spatial.distance import euclidean
+import copy
 
 
 def import_data(filename):
@@ -23,38 +24,49 @@ def normalize_data(x):
 
     return x
 
-def kmeans(x, y, k):
+def kmeans(x, k):
     means = [] # mus
     clusters = dict() # S
   
+    
+    # randomly assign positions for k centroids of clusters in len(x[0]) dimensional space
     for i in range(k):
         means.append([random.uniform(-3,3) for _ in range(len(x[0]))])
-        clusters[i] = []
+        # clusters[i] = [] # bucket that contains all of the datapoints assigned to each cluster
 
-    previous_means = []
+    # keep track of previous means, if there's no change between the current means and previous means then the algorithm is converged
+    previous_means = None
     while True:
-        clusters = dict()
-        for datapoint in x:
-            dists = []
-            for mean in means:
+        clusters = dict() # S 
+        # initialize the buckets for S
+        for i in range(k):
+            clusters[i] = []
+
+        for datapoint in x: # iterate through each datapoint
+            dists = [] 
+            for mean in means: # Want to calculate distances^2 for all means and store the minimum value
                 dists.append(euclidean(datapoint, mean) ** 2)
             m = min(dists)
+            # the index of the minimum distance can access the ith cluster (bucket) to put the datapoint into
             clusters[dists.index(m)].append(datapoint)
-            
-        for key in clusters:
-            if len(clusters[key]) == 0: 
+
+
+        for key in clusters: # iterate through all clusters (buckets)
+            if len(clusters[key]) == 0: # if there's nothing in the bucket, ignore it
                 continue
-            else:
+            else:   # find the mean of that bucket, and update the ith mu/mean to be the bucket's mean
                 means[key] = np.mean(clusters[key])
         
-        if means == previous_means:
+        if np.array_equal(means, previous_means): # if the update didn't change anything, k-means has converged
             break
-        previous_means = means
+        previous_means = copy.deepcopy(means)
     
+    return means, clusters
+
 def compute_objective(means, clusters):
     dist = 0
-    for key in clusters:
-        dist += sum([(x-means[key]) ** 2 for x in clusters[key]])
+    for key in clusters:  # (x-means[key]) ** 2 
+        dist += sum([euclidean(x, means[key]) ** 2 for x in clusters[key]])
     
     return dist
 
@@ -64,7 +76,19 @@ if __name__ == "__main__":
     x = normalize_data(x)
     
 
+    import time
+    start_time = time.time()
+
+
     ks = [12, 18, 24, 36, 42]
-    kmeans(x, y, 12)
-    # for k in ks:
-        # kmeans(x, y, k)
+    for k in ks:
+        objectives = []
+        for _ in range(20):
+            means, clusters = kmeans(x, k)
+            objectives.append(compute_objective(means,clusters))
+
+        print("k = %d \t mean = %f variance = %f" % (k, np.mean(objectives), np.var(objectives)))
+        
+
+
+    print("--- %s seconds elapsed ---" % (time.time() - start_time))
