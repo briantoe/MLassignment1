@@ -76,8 +76,8 @@ if __name__ == "__main__":
     x = normalize_data(x)
     
 
-    # import time
-    # start_time = time.time()
+    import time
+    start_time = time.time()
 
 
     ks = [12, 18, 24, 36, 42]
@@ -91,4 +91,4 @@ if __name__ == "__main__":
         
 
 
-    # print("--- %s seconds elapsed ---" % (time.time() - start_time))
+    print("--- %s minutes elapsed ---" % ((time.time() - start_time)/60.0))
