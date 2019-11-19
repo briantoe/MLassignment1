@@ -66,24 +66,24 @@ def compute_objective(mean, covariance, lam, q, x, k):
     for i in range(len(x)):
         temp_out = 0
         for y in range(k):
-            temp_out += q[i][y]* log(gauss_prob_density(x[i], mean[y], covariance[y]) / q[i][y])
+            temp_out += q[i][y] * log(gauss_prob_density(x[i], mean[y], covariance[y]) / q[i][y])
         out += temp_out
     return out
+
 
 def gauss_prob_density(x, mean, covariance):
     return multivariate_normal.pdf(x, mean, covariance)
 
 
 def gmm(x, k):
-    prev_cov = []
-    prev_mean = []
-    prev_lam = []
-    prev_qs = []
+    prev_loglike = -1
     covariance = [np.eye(len(x[0])) for _ in range(k)]
     mean = np.zeros((k, len(x[0])))
     lam = np.random.dirichlet(np.ones(k), size=1)[0]
-
+    iters = 0
     while True:
+        print("Iteration ", iters)
+        iters += 1
         # e_step
         qs = []
         for xi in x:
@@ -91,15 +91,16 @@ def gmm(x, k):
 
         # m_step
         mean, covariance, lam = m_step(qs,x,k)
-
-        if np.array_equal(prev_cov, covariance) and np.array_equal(prev_mean, mean) and np.array_equal(prev_lam, lam) and np.array_equal(prev_qs, qs):
+        loglike = compute_objective(mean, covariance, lam, qs, x, k)
+        if abs(prev_loglike - loglike) < pow(10, -6): # if converged
+            print(prev_loglike)
+            print(loglike)
             break
-        
         # keep track of previous iteration
-        prev_cov = copy.deepcopy(covariance)
-        prev_mean = copy.deepcopy(mean)
-        prev_lam = copy.deepcopy(lam)
-        prev_qs = copy.deepcopy(qs)
+        print(prev_loglike)
+        print(loglike)
+        prev_loglike = loglike
+
 
     return mean, covariance, lam, qs
     
