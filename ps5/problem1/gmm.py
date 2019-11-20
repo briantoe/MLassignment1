@@ -81,6 +81,7 @@ def gmm(x, k):
     mean = np.zeros((k, len(x[0])))
     lam = np.random.dirichlet(np.ones(k), size=1)[0]
     iters = 0
+    loglike = -2
     while True:
         print("Iteration ", iters)
         iters += 1
@@ -91,15 +92,16 @@ def gmm(x, k):
 
         # m_step
         mean, covariance, lam = m_step(qs,x,k)
-        loglike = compute_objective(mean, covariance, lam, qs, x, k)
+        
         if abs(prev_loglike - loglike) < pow(10, -6): # if converged
             print(prev_loglike)
             print(loglike)
             break
         # keep track of previous iteration
+        prev_loglike = loglike
+        loglike = compute_objective(mean, covariance, lam, qs, x, k)
         print(prev_loglike)
         print(loglike)
-        prev_loglike = loglike
 
 
     return mean, covariance, lam, qs
