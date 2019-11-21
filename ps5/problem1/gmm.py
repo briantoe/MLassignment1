@@ -75,18 +75,18 @@ def compute_objective(mean, covariance, lam, q, x, k):
 
 
 def gauss_prob_density(x, mean, covariance):
-    try:
-        return multivariate_normal.pdf(x, mean, covariance)
-    except np.linalg.LinAlgError:
-        print(covariance)
-        print(np.linalg.det(covariance))
-        print("oof")
-        raise np.linalg.LinAlgError
+    print(is_pos_def(covariance))
+    return multivariate_normal.pdf(x, mean, covariance)
+
+
+
+def is_pos_def(x):
+    return np.all(np.linalg.eigvals(x) >= 0) and np.all(x-x.T==0)
 
 
 def gmm(x, k):
     covariance = [np.eye(len(x[0])) for _ in range(k)]
-    mean = [[random.uniform(0,0) for _ in range(len(x[0]))] for _ in range(k)]
+    mean = [[random.uniform(-3,3) for _ in range(len(x[0]))] for _ in range(k)]
     lam = np.random.dirichlet(np.ones(k), size=1)[0]
     iters = 0
 
