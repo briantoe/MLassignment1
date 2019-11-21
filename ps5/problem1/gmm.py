@@ -26,37 +26,40 @@ def normalize_data(x):
 
     return x
 
-def e_step(xi, means, covariances, lams, j):
+def e_step(xi, mean, covariance, lam, j):
     # xi is a datapoint
     # means is the means for all the gaussians
     # same with covariances
     # lams is all the lambdas for the gaussians
     # j is an index of a particular lambda
-
-    q = (gauss_prob_density(xi, means[j], covariances[j]) * lams[j]) 
-    q = q / (sum([gauss_prob_density(xi, means[l], covariances[l]) * lams[l] for l in range(len(lams))])) 
+    q = (gauss_prob_density(xi, mean[j], covariance[j]) * lam[j])  
     return q
 
 
 def m_step(qs, xs, k):
+    N = len(x)
     lams = np.mean(qs, axis=0)
 
     means = []
-    q_tranpose = np.array(qs).T
-    means = np.divide(np.matmul(q_tranpose, np.array(xs)), np.sum(qs, axis=0).reshape(k,1))
+    for y in range(k):
+        mu_y = 0
+        d = 0
+        for i in range(N):
+            mu_y += qs[i][y] * x[i]
+            d += qs[i][y]
+        means.append(mu_y / d)
 
-    temp = np.sum(qs, axis=0).reshape(k,1)
     covariance = []
-    N = len(x)
     for y in range(k):
         num = 0
-        den = temp[y]
+        d = 0
         for i in range(N):
             vect = np.array(xs[i] - means[y])
             num += qs[i][y] * np.outer(vect, vect.T)
+            d += qs[i][y]
 
-        temp_cov = np.divide(num, np.sum(den))
-        covariance.append(temp_cov)
+        cov_elem = np.divide(num, d)
+        covariance.append(cov_elem)
 
     return means, covariance, lams
 
@@ -72,37 +75,48 @@ def compute_objective(mean, covariance, lam, q, x, k):
 
 
 def gauss_prob_density(x, mean, covariance):
-    return multivariate_normal.pdf(x, mean, covariance)
+    try:
+        return multivariate_normal.pdf(x, mean, covariance)
+    except np.linalg.LinAlgError:
+        print(covariance)
+        print(np.linalg.det(covariance))
+        print("oof")
+        raise np.linalg.LinAlgError
 
 
 def gmm(x, k):
-    prev_loglike = -1
     covariance = [np.eye(len(x[0])) for _ in range(k)]
-    mean = np.zeros((k, len(x[0])))
+    mean = [[random.uniform(0,0) for _ in range(len(x[0]))] for _ in range(k)]
     lam = np.random.dirichlet(np.ones(k), size=1)[0]
     iters = 0
-    loglike = -2
+
+    prev_cov = []
+    prev_mean = []
+    prev_lam = []
+    prev_qs = []
+
     while True:
         print("Iteration ", iters)
         iters += 1
+        
         # e_step
         qs = []
         for xi in x:
-            qs.append([e_step(xi, mean, covariance, lam, j) for j in range(len(lam))])
+            d = (sum([gauss_prob_density(xi, mean[l], covariance[l]) * lam[l] for l in range(k)])) 
+            qs.append([e_step(xi, mean, covariance, lam, j) / d for j in range(k)])
+
 
         # m_step
         mean, covariance, lam = m_step(qs,x,k)
-        
-        if abs(prev_loglike - loglike) < pow(10, -6): # if converged
-            print(prev_loglike)
-            print(loglike)
-            break
+      
         # keep track of previous iteration
-        prev_loglike = loglike
-        loglike = compute_objective(mean, covariance, lam, qs, x, k)
-        print(prev_loglike)
-        print(loglike)
-
+        if  np.array_equal(qs, prev_qs) or np.array_equal(mean, prev_mean) or np.array_equal(covariance, prev_cov) or np.array_equal(lam, prev_lam):
+            break
+        
+        prev_cov = copy.deepcopy(covariance)
+        prev_mean = copy.deepcopy(mean)
+        prev_lam = copy.deepcopy(lam)
+        prev_qs = copy.deepcopy(qs)
 
     return mean, covariance, lam, qs
     
@@ -115,7 +129,7 @@ if __name__ == "__main__":
     for k in ks:
         objectives = [] 
         for _ in range(20):
-            mean, covariance, lam, qs = gmm(x, 12)
+            mean, covariance, lam, qs = gmm(x, k)
             objectives.append(compute_objective(mean, covariance, lam, qs, x, k))
 
         print("k = %d \t mean = %f variance = %f" % (k, np.mean(objectives), np.var(objectives)))

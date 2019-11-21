@@ -35,7 +35,7 @@ def kmeans(x, k):
         # clusters[i] = [] # bucket that contains all of the datapoints assigned to each cluster
     
     for i in range(k):
-        
+        pass
 
     # keep track of previous means, if there's no change between the current means and previous means then the algorithm is converged
     previous_means = None
