@@ -75,13 +75,11 @@ def compute_objective(mean, covariance, lam, q, x, k):
 
 
 def gauss_prob_density(x, mean, covariance):
-    print(is_pos_def(covariance))
-    return multivariate_normal.pdf(x, mean, covariance)
-
-
-
-def is_pos_def(x):
-    return np.all(np.linalg.eigvals(x) >= 0) and np.all(x-x.T==0)
+    try:
+        return multivariate_normal.pdf(x, mean, covariance)
+    except np.linalg.LinAlgError:
+        covariance = covariance + np.diag([1e-3 for _ in range(len(covariance))])
+        return multivariate_normal.pdf(x, mean, covariance)
 
 
 def gmm(x, k):
@@ -90,11 +88,7 @@ def gmm(x, k):
     lam = np.random.dirichlet(np.ones(k), size=1)[0]
     iters = 0
 
-    prev_cov = []
-    prev_mean = []
-    prev_lam = []
-    prev_qs = []
-
+    prev_qs = np.random.rand(len(x), k)
     while True:
         print("Iteration ", iters)
         iters += 1
@@ -106,17 +100,17 @@ def gmm(x, k):
             qs.append([e_step(xi, mean, covariance, lam, j) / d for j in range(k)])
 
 
+        # keep track of previous iteration
+        # if np.array_equal(qs, prev_qs):
+        #     break
+        if np.allclose(qs, prev_qs, atol=1e-05):
+            break
+        prev_qs = copy.deepcopy(qs)
+
         # m_step
         mean, covariance, lam = m_step(qs,x,k)
       
-        # keep track of previous iteration
-        if  np.array_equal(qs, prev_qs) or np.array_equal(mean, prev_mean) or np.array_equal(covariance, prev_cov) or np.array_equal(lam, prev_lam):
-            break
         
-        prev_cov = copy.deepcopy(covariance)
-        prev_mean = copy.deepcopy(mean)
-        prev_lam = copy.deepcopy(lam)
-        prev_qs = copy.deepcopy(qs)
 
     return mean, covariance, lam, qs
     
