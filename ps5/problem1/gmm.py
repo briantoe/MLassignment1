@@ -69,7 +69,8 @@ def compute_objective(mean, covariance, lam, q, x, k):
     for i in range(len(x)):
         temp_out = 0
         for y in range(k):
-            temp_out += q[i][y] * log(gauss_prob_density(x[i], mean[y], covariance[y]) / q[i][y])
+            if q[i][y] > 1e-5 and gauss_prob_density(x[i], mean[y], covariance[y]) > 1e-5:
+               temp_out += q[i][y] * log(gauss_prob_density(x[i], mean[y], covariance[y]) / q[i][y])
         out += temp_out
     return out
 
@@ -88,7 +89,7 @@ def gmm(x, k):
     lam = np.random.dirichlet(np.ones(k), size=1)[0]
     iters = 0
 
-    prev_qs = np.random.rand(len(x), k)
+    prev_qs = [] #np.random.rand(len(x), k)
     while True:
         print("Iteration ", iters)
         iters += 1
@@ -103,7 +104,7 @@ def gmm(x, k):
         # keep track of previous iteration
         # if np.array_equal(qs, prev_qs):
         #     break
-        if np.allclose(qs, prev_qs, atol=1e-05):
+        if len(prev_qs) != 0 and np.allclose(qs, prev_qs, atol=1e-05):
             break
         prev_qs = copy.deepcopy(qs)
 
@@ -122,7 +123,8 @@ if __name__ == "__main__":
     ks = [12, 18, 24, 36, 42]
     for k in ks:
         objectives = [] 
-        for _ in range(20):
+        for i in range(20):            
+            print("random initialization %d for k = %d" % (i, k))
             mean, covariance, lam, qs = gmm(x, k)
             objectives.append(compute_objective(mean, covariance, lam, qs, x, k))
 
