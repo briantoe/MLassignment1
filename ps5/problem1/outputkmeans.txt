@@ -1,0 +1,6 @@
+k = 12   mean = 1233.714809 variance = 32475.417484
+k = 18   mean = 1058.719527 variance = 42097.109244
+k = 24   mean = 912.744755 variance = 30301.055859
+k = 36   mean = 835.758682 variance = 19020.551579
+k = 42   mean = 743.754035 variance = 10913.512184
+--- 4.195016185442607 minutes elapsed ---

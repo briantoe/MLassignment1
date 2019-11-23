@@ -30,13 +30,26 @@ def kmeans(x, k):
   
     
     # randomly assign positions for k centroids of clusters in len(x[0]) dimensional space
-    for _ in range(k):
-        means.append([random.uniform(-3,3) for _ in range(len(x[0]))])
+    means.append(x[random.randint(0, len(x) - 1)])
+    
+    for remaining in range(k - 1):
+        dist = []
+        for i in range(np.array(x).shape[0]):
+            point = x[i]
+            d = np.inf
+
+            for j in range(len(means)):
+                temp_dist = euclidean(point, means[j])
+                d = min(d, temp_dist)
+            dist.append(d)
+        dist = np.array(dist)
+        next_mean = x[np.argmax(dist), :]
+        means.append(next_mean)
+        
+
+        # means.append([x[random.randint(0, len(x))] for _ in range(len(x[0]))])
         # clusters[i] = [] # bucket that contains all of the datapoints assigned to each cluster
     
-    for i in range(k):
-        pass
-
     # keep track of previous means, if there's no change between the current means and previous means then the algorithm is converged
     previous_means = None
     while True:

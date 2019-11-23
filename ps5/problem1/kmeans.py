@@ -13,6 +13,7 @@ def import_data(filename):
     return data, labels
 
 def normalize_data(x):
+    # normalize data to achieve 0 mean and variance of 1
     M = np.mean(x.T, axis=1)
     C = x - M
 

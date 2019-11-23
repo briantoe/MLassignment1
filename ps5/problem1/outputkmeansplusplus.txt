@@ -1,0 +1,5 @@
+k = 12   mean = 905.816598 variance = 1897.204150
+k = 18   mean = 703.179827 variance = 975.917913
+k = 24   mean = 560.720476 variance = 297.675276
+k = 36   mean = 389.962608 variance = 198.218630
+k = 42   mean = 344.116010 variance = 85.606957

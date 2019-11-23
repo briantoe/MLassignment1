@@ -78,20 +78,24 @@ def compute_objective(mean, covariance, lam, q, x, k):
 def gauss_prob_density(x, mean, covariance):
     try:
         return multivariate_normal.pdf(x, mean, covariance)
-    except np.linalg.LinAlgError:
-        covariance = covariance + np.diag([1e-3 for _ in range(len(covariance))])
+    except:
+        covariance = covariance + np.diag([1e-8 for _ in range(len(covariance))])
         return multivariate_normal.pdf(x, mean, covariance)
+    
+
 
 
 def gmm(x, k):
     covariance = [np.eye(len(x[0])) for _ in range(k)]
     mean = [[random.uniform(-3,3) for _ in range(len(x[0]))] for _ in range(k)]
     lam = np.random.dirichlet(np.ones(k), size=1)[0]
+
     iters = 0
 
-    prev_qs = [] #np.random.rand(len(x), k)
+    prev_qs = [] 
+    prev_loglike = 0
     while True:
-        print("Iteration ", iters)
+        #print("Iteration ", iters)
         iters += 1
         
         # e_step
@@ -102,16 +106,21 @@ def gmm(x, k):
 
 
         # keep track of previous iteration
-        # if np.array_equal(qs, prev_qs):
-        #     break
-        if len(prev_qs) != 0 and np.allclose(qs, prev_qs, atol=1e-05):
+        # if len(prev_qs) != 0:
+            #print(np.allclose(qs, prev_qs, rtol=1e-03, atol=1e-03) or np.allclose(prev_qs, qs, rtol=1e-03, atol=1e-03))
+        if len(prev_qs) != 0 and (np.allclose(qs, prev_qs, rtol=1e-03, atol=1e-03) or np.allclose(prev_qs, qs, rtol=1e-03, atol=1e-03)):
+            #print('end because of prev_qs')
             break
         prev_qs = copy.deepcopy(qs)
 
         # m_step
         mean, covariance, lam = m_step(qs,x,k)
       
-        
+        loglike = compute_objective(mean, covariance, lam, qs, x, k)
+        if abs(loglike - prev_loglike) < 1e-4:
+            #print('end because of prev_loglike')
+            break  
+        prev_loglike = loglike
 
     return mean, covariance, lam, qs
     
@@ -120,11 +129,11 @@ if __name__ == "__main__":
     x, y = import_data('leaf.data')
     x = normalize_data(x) 
     
-    ks = [12, 18, 24, 36, 42]
+    ks = [36, 42]
     for k in ks:
         objectives = [] 
         for i in range(20):            
-            print("random initialization %d for k = %d" % (i, k))
+            #print("random initialization %d for k = %d" % (i, k))
             mean, covariance, lam, qs = gmm(x, k)
             objectives.append(compute_objective(mean, covariance, lam, qs, x, k))
 
