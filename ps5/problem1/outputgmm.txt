@@ -2,17 +2,4 @@ k = 12   mean = 5145.572891 variance = 46485.506672
 k = 18   mean = 7560.088108 variance = 137883.955780
 k = 24   mean = 9620.721056 variance = 229526.258020
 k = 36   mean = 13496.626779 variance = 306084.010890
-Traceback (most recent call last):
-  File ".\gmm.py", line 135, in <module>
-    mean, covariance, lam, qs = gmm(x, k)
-  File ".\gmm.py", line 117, in gmm
-    loglike = compute_objective(mean, covariance, lam
-  File ".\gmm.py", line 72, in compute_objective
-    if q[i][y] > 1e-5 and gauss_prob_density(x[i], me
-  File ".\gmm.py", line 80, in gauss_prob_density
-    return multivariate_normal.pdf(x, mean, covarianc
-  File "C:\Users\AuthenticUser\AppData\Local\Programs
-    psd = _PSD(cov, allow_singular=allow_singular)
-  File "C:\Users\AuthenticUser\AppData\Local\Programs
-    raise ValueError('the input matrix must be positi
-ValueError: the input matrix must be positive semidef
+k = 42   mean = 15309.242375 variance = 363199.17824
