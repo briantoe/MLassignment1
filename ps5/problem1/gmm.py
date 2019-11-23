@@ -129,7 +129,7 @@ if __name__ == "__main__":
     x, y = import_data('leaf.data')
     x = normalize_data(x) 
     
-    ks = [36, 42]
+    ks = [12, 18, 24, 36, 42]
     for k in ks:
         objectives = [] 
         for i in range(20):            
